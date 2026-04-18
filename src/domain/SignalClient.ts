@@ -59,6 +59,13 @@ export interface SignalClientService {
     groupId?: string;
     caption?: string;
   }) => Effect.Effect<SendResult, SignalError | SignalRpcError>;
+  readonly updateProfile: (params: {
+    account: string;
+    givenName?: string;
+    familyName?: string;
+    about?: string;
+    avatarPath?: string;
+  }) => Effect.Effect<void, SignalError | SignalRpcError>;
 }
 
 export class SignalClient extends Context.Tag("SignalClient")<

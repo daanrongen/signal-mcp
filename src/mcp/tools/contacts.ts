@@ -81,6 +81,43 @@ export const registerContactTools = (
   );
 
   server.tool(
+    "update_profile",
+    "Update the Signal profile display name, about text, or avatar for an account. avatarPath must be an absolute path on the signal-cli server filesystem.",
+    {
+      account: z.string().describe("The Signal account phone number (e.g. +447356051088)"),
+      givenName: z.string().optional().describe("First name to set on the profile"),
+      familyName: z.string().optional().describe("Last name to set on the profile"),
+      about: z.string().optional().describe("About / bio text to set on the profile"),
+      avatarPath: z
+        .string()
+        .optional()
+        .describe("Absolute path to an avatar image on the signal-cli server filesystem"),
+    },
+    {
+      title: "Update Signal Profile",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    async ({ account, givenName, familyName, about, avatarPath }) =>
+      runTool(
+        runtime,
+        Effect.gen(function* () {
+          const client = yield* SignalClient;
+          return yield* client.updateProfile({
+            account,
+            ...(givenName !== undefined ? { givenName } : {}),
+            ...(familyName !== undefined ? { familyName } : {}),
+            ...(about !== undefined ? { about } : {}),
+            ...(avatarPath !== undefined ? { avatarPath } : {}),
+          });
+        }),
+        formatSuccess,
+      ),
+  );
+
+  server.tool(
     "get_user_status",
     "Check whether one or more phone numbers are registered on Signal.",
     {
