@@ -60,6 +60,25 @@ describe("sendMessage", () => {
   });
 });
 
+describe("sendMessage with quote", () => {
+  it("returns a SendResult when quoting a message", async () => {
+    const result = await Effect.runPromise(
+      Effect.gen(function* () {
+        const client = yield* SignalClient;
+        return yield* client.sendMessage({
+          account: MOCK_ACCOUNT,
+          message: "This is a reply",
+          recipients: ["+441234567890"],
+          quoteTimestamp: 1700000000000,
+          quoteAuthor: "+441234567890",
+          quoteMessage: "Original message text",
+        });
+      }).pipe(Effect.provide(SignalClientTest)),
+    );
+    expect(typeof result.timestamp).toBe("number");
+  });
+});
+
 describe("receiveMessages", () => {
   it("returns a ReceiveResult with envelopes", async () => {
     const result = await Effect.runPromise(
