@@ -167,3 +167,19 @@ describe("subscribeMessages", () => {
     expect(Array.isArray(result.envelopes)).toBe(true);
   });
 });
+
+describe("remoteDelete", () => {
+  it("completes without error", async () => {
+    const result = await Effect.runPromise(
+      Effect.gen(function* () {
+        const client = yield* SignalClient;
+        return yield* client.remoteDelete({
+          account: MOCK_ACCOUNT,
+          recipient: "+441234567890",
+          targetTimestamp: 1700000000000,
+        });
+      }).pipe(Effect.provide(SignalClientTest)),
+    );
+    expect(result).toBeUndefined();
+  });
+});

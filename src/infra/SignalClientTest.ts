@@ -63,6 +63,8 @@ export const SignalClientTest = Layer.effect(
       markAsRead: (_params) => Effect.void,
 
       subscribeMessages: (_params) => Effect.succeed(new ReceiveResult({ envelopes: [] })),
+
+      remoteDelete: (_params) => Effect.void,
     });
   }),
 );
