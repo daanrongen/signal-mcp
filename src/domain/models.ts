@@ -20,12 +20,27 @@ export class Group extends Schema.Class<Group>("Group")({
   memberCount: Schema.optional(Schema.Number),
 }) {}
 
+export class DataMessage extends Schema.Class<DataMessage>("DataMessage")({
+  message: Schema.optional(Schema.String),
+  timestamp: Schema.optional(Schema.Number),
+  expiresInSeconds: Schema.optional(Schema.Number),
+  viewOnce: Schema.optional(Schema.Boolean),
+  groupInfo: Schema.optional(Schema.Unknown),
+  attachments: Schema.optional(Schema.Array(Schema.Unknown)),
+  mentions: Schema.optional(Schema.Array(Schema.Unknown)),
+}) {}
+
 export class Envelope extends Schema.Class<Envelope>("Envelope")({
   source: Schema.optional(Schema.String),
   sourceNumber: Schema.optional(Schema.String),
   sourceName: Schema.optional(Schema.String),
+  sourceDevice: Schema.optional(Schema.Number),
   timestamp: Schema.Number,
-  dataMessage: Schema.optional(Schema.Unknown),
+  dataMessage: Schema.optional(DataMessage),
+  syncMessage: Schema.optional(Schema.Unknown),
+  callMessage: Schema.optional(Schema.Unknown),
+  receiptMessage: Schema.optional(Schema.Unknown),
+  typingMessage: Schema.optional(Schema.Unknown),
 }) {}
 
 export class ReceiveResult extends Schema.Class<ReceiveResult>("ReceiveResult")({

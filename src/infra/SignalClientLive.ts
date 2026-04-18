@@ -88,9 +88,9 @@ export const SignalClientLive = Layer.effect(
         }).pipe(Effect.map((r) => new SendResult(r))),
 
       receiveMessages: (account) =>
-        rpcCall<{ envelopes?: unknown[] }>("receive", { account }).pipe(
-          Effect.map((r) => {
-            const envelopes = (r?.envelopes ?? []).map(
+        rpcCall<unknown[]>("receive", { account }).pipe(
+          Effect.map((items) => {
+            const envelopes = (items ?? []).map(
               (e) => new Envelope(e as ConstructorParameters<typeof Envelope>[0]),
             );
             return new ReceiveResult({ envelopes });
@@ -119,65 +119,26 @@ export const SignalClientLive = Layer.effect(
           ...(stop !== undefined ? { stop } : {}),
         }).pipe(Effect.asVoid),
 
-      subscribeMessages: ({ account: _account, timeoutMs = 10000 }) =>
-        Effect.tryPromise({
-          try: async () => {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), Math.min(timeoutMs, 30000));
-            const envelopes: Envelope[] = [];
+      subscribeMessages: ({ account, timeoutMs = 10000 }) =>
+        Effect.gen(function* () {
+          const limit = Math.min(timeoutMs, 30000);
+          const deadline = Date.now() + limit;
+          const all: Envelope[] = [];
 
-            try {
-              const response = await fetch(`${baseHost}/api/v1/events`, {
-                headers: { Accept: "text/event-stream" },
-                signal: controller.signal,
-              });
+          while (Date.now() < deadline) {
+            const batch = yield* rpcCall<unknown[]>("receive", { account }).pipe(
+              Effect.map((items) =>
+                (items ?? []).map(
+                  (e) => new Envelope(e as ConstructorParameters<typeof Envelope>[0]),
+                ),
+              ),
+            );
+            all.push(...batch);
+            if (all.length > 0) break;
+            yield* Effect.sleep(500);
+          }
 
-              const reader = response.body?.getReader();
-              if (!reader) return new ReceiveResult({ envelopes });
-              const decoder = new TextDecoder();
-              let buffer = "";
-
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                const lines = buffer.split("\n");
-                buffer = lines.pop() ?? "";
-                for (const line of lines) {
-                  if (!line.startsWith("data: ")) continue;
-                  try {
-                    const json = JSON.parse(line.slice(6)) as {
-                      method?: string;
-                      params?: { envelope?: unknown; account?: string };
-                    };
-                    if (json.method === "receive" && json.params?.envelope) {
-                      envelopes.push(
-                        new Envelope(
-                          json.params.envelope as ConstructorParameters<typeof Envelope>[0],
-                        ),
-                      );
-                    }
-                  } catch {
-                    // skip malformed SSE line
-                  }
-                }
-              }
-            } catch (e) {
-              if (e instanceof Error && e.name === "AbortError") {
-                // timeout — return what we have
-                return new ReceiveResult({ envelopes });
-              }
-              throw e;
-            } finally {
-              clearTimeout(timer);
-            }
-
-            return new ReceiveResult({ envelopes });
-          },
-          catch: (e) => {
-            if (e instanceof SignalError) return e;
-            return new SignalError({ message: "SSE stream failed", cause: e });
-          },
+          return new ReceiveResult({ envelopes: all });
         }),
     });
   }),
