@@ -119,7 +119,7 @@ export const registerContactTools = (
 
   server.tool(
     "get_user_status",
-    "Check whether one or more phone numbers are registered on Signal.",
+    "Check whether one or more phone numbers are registered on Signal. Note: signal-cli always returns isRegistered: false when querying the account's own number — this is a known signal-cli limitation, not an error.",
     {
       account: z.string().describe("The Signal account phone number used to query"),
       numbers: z
