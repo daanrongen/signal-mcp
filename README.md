@@ -17,9 +17,9 @@ bunx @daanrongen/signal-mcp
 
 ## Configuration
 
-| Variable     | Required | Description                                                     |
-| ------------ | -------- | --------------------------------------------------------------- |
-| `SIGNAL_URL` | Yes      | signal-cli base URL (e.g. `http://raspberrypi:30880`)           |
+| Variable     | Required | Description                                          |
+| ------------ | -------- | ---------------------------------------------------- |
+| `SIGNAL_URL` | Yes      | signal-cli base URL (e.g. `http://localhost:8080`)   |
 
 ## Setup
 
@@ -31,10 +31,11 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "signal": {
+      "type": "stdio",
       "command": "bunx",
       "args": ["@daanrongen/signal-mcp"],
       "env": {
-        "SIGNAL_URL": "http://raspberrypi:30880"
+        "SIGNAL_URL": "http://localhost:8080"
       }
     }
   }
@@ -44,7 +45,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ### Claude Code CLI
 
 ```bash
-claude mcp add signal -e SIGNAL_URL=http://raspberrypi:30880 -- bunx @daanrongen/signal-mcp
+claude mcp add signal -e SIGNAL_URL=http://localhost:8080 -- bunx @daanrongen/signal-mcp
 ```
 
 ## Development
