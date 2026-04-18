@@ -67,6 +67,8 @@ export const SignalClientTest = Layer.effect(
       remoteDelete: (_params) => Effect.void,
 
       sendAttachment: (_params) => Effect.succeed(new SendResult({ timestamp: Date.now() })),
+
+      updateProfile: () => Effect.void,
     });
   }),
 );

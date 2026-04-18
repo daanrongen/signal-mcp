@@ -175,6 +175,15 @@ export const SignalClientLive = Layer.effect(
           ...(groupId ? { groupId } : {}),
           ...(caption !== undefined ? { message: caption } : {}),
         }).pipe(Effect.map((r) => new SendResult(r))),
+
+      updateProfile: ({ account, givenName, familyName, about, avatarPath }) =>
+        rpcCall<void>("updateProfile", {
+          account,
+          ...(givenName !== undefined ? { givenName } : {}),
+          ...(familyName !== undefined ? { familyName } : {}),
+          ...(about !== undefined ? { about } : {}),
+          ...(avatarPath !== undefined ? { avatarPath } : {}),
+        }).pipe(Effect.asVoid),
     });
   }),
 );

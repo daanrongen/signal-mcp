@@ -199,3 +199,20 @@ describe("sendAttachment", () => {
     expect(typeof result.timestamp).toBe("number");
   });
 });
+
+describe("updateProfile", () => {
+  it("completes without error", async () => {
+    const result = await Effect.runPromise(
+      Effect.gen(function* () {
+        const client = yield* SignalClient;
+        return yield* client.updateProfile({
+          account: MOCK_ACCOUNT,
+          givenName: "Alice",
+          familyName: "Smith",
+          about: "Hello from Signal",
+        });
+      }).pipe(Effect.provide(SignalClientTest)),
+    );
+    expect(result).toBeUndefined();
+  });
+});
