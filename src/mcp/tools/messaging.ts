@@ -18,6 +18,21 @@ export const registerMessagingTools = (
       message: z.string().min(1).describe("The text body of the message"),
       recipients: z.array(z.string()).optional().describe("List of E.164 recipient phone numbers"),
       groupId: z.string().optional().describe("Base64-encoded Signal group ID to send to a group"),
+      quoteTimestamp: z
+        .number()
+        .int()
+        .optional()
+        .describe(
+          "Unix millisecond timestamp of the message to reply to (from the envelope's timestamp field)",
+        ),
+      quoteAuthor: z
+        .string()
+        .optional()
+        .describe("E.164 phone number of the author of the message being quoted"),
+      quoteMessage: z
+        .string()
+        .optional()
+        .describe("Text preview of the quoted message (shown as inline quote above your reply)"),
     },
     {
       title: "Send Signal Message",
@@ -26,7 +41,7 @@ export const registerMessagingTools = (
       idempotentHint: false,
       openWorldHint: true,
     },
-    async ({ account, message, recipients, groupId }) =>
+    async ({ account, message, recipients, groupId, quoteTimestamp, quoteAuthor, quoteMessage }) =>
       runTool(
         runtime,
         Effect.gen(function* () {
@@ -36,6 +51,9 @@ export const registerMessagingTools = (
             message,
             ...(recipients !== undefined ? { recipients } : {}),
             ...(groupId !== undefined ? { groupId } : {}),
+            ...(quoteTimestamp !== undefined ? { quoteTimestamp } : {}),
+            ...(quoteAuthor !== undefined ? { quoteAuthor } : {}),
+            ...(quoteMessage !== undefined ? { quoteMessage } : {}),
           });
         }),
         formatSuccess,

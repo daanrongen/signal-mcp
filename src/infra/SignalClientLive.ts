@@ -78,12 +78,23 @@ export const SignalClientLive = Layer.effect(
           Effect.map((items) => (items ?? []).map((i) => new Group(i))),
         ),
 
-      sendMessage: ({ account, message, recipients, groupId }) =>
+      sendMessage: ({
+        account,
+        message,
+        recipients,
+        groupId,
+        quoteTimestamp,
+        quoteAuthor,
+        quoteMessage,
+      }) =>
         rpcCall<SendResult>("send", {
           account,
           message,
           ...(recipients ? { recipient: recipients } : {}),
           ...(groupId ? { groupId } : {}),
+          ...(quoteTimestamp !== undefined ? { quoteTimestamp } : {}),
+          ...(quoteAuthor !== undefined ? { quoteAuthor } : {}),
+          ...(quoteMessage !== undefined ? { quoteMessage } : {}),
         }).pipe(Effect.map((r) => new SendResult(r))),
 
       receiveMessages: (account) =>

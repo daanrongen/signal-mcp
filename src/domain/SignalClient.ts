@@ -13,6 +13,9 @@ export interface SignalClientService {
     message: string;
     recipients?: string[];
     groupId?: string;
+    quoteTimestamp?: number;
+    quoteAuthor?: string;
+    quoteMessage?: string;
   }) => Effect.Effect<SendResult, SignalError | SignalRpcError>;
   readonly receiveMessages: (
     account: string,
