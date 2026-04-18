@@ -65,6 +65,8 @@ export const SignalClientTest = Layer.effect(
       subscribeMessages: (_params) => Effect.succeed(new ReceiveResult({ envelopes: [] })),
 
       remoteDelete: (_params) => Effect.void,
+
+      sendAttachment: (_params) => Effect.succeed(new SendResult({ timestamp: Date.now() })),
     });
   }),
 );
