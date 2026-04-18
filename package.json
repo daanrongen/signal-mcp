@@ -1,0 +1,42 @@
+{
+  "name": "@daanrongen/signal-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Signal messaging via signal-cli JSON-RPC",
+  "type": "module",
+  "bin": {
+    "signal-mcp": "./dist/main.js"
+  },
+  "main": "./dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "bun --watch src/main.ts",
+    "build": "bun build src/main.ts --outfile dist/main.js --target bun",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "test": "bun test",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major",
+    "postversion": "git push --follow-tags"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "effect": "^3.21.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.12",
+    "bun-types": "latest",
+    "lefthook": "^2.1.5",
+    "typescript": "^5.8.3"
+  }
+}
