@@ -46,6 +46,12 @@ export interface SignalClientService {
     account: string;
     timeoutMs?: number;
   }) => Effect.Effect<ReceiveResult, SignalError | SignalRpcError>;
+  readonly remoteDelete: (params: {
+    account: string;
+    recipient?: string;
+    groupId?: string;
+    targetTimestamp: number;
+  }) => Effect.Effect<void, SignalError | SignalRpcError>;
 }
 
 export class SignalClient extends Context.Tag("SignalClient")<

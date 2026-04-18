@@ -137,6 +137,14 @@ export const SignalClientLive = Layer.effect(
           type: "read",
         }).pipe(Effect.asVoid),
 
+      remoteDelete: ({ account, recipient, groupId, targetTimestamp }) =>
+        rpcCall<void>("remoteDelete", {
+          account,
+          ...(recipient !== undefined ? { recipient } : {}),
+          ...(groupId !== undefined ? { groupId } : {}),
+          targetTimestamp,
+        }).pipe(Effect.asVoid),
+
       subscribeMessages: ({ account, timeoutMs = 10000 }) =>
         Effect.gen(function* () {
           const limit = Math.min(timeoutMs, 30000);

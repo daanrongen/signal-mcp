@@ -225,4 +225,46 @@ export const registerMessagingTools = (
         () => formatSuccess({ ok: true }),
       ),
   );
+
+  server.tool(
+    "remote_delete",
+    "Delete a previously sent Signal message on all recipients' devices. Use this to retract incorrect or unwanted messages. Requires the timestamp returned by send_message.",
+    {
+      account: z
+        .string()
+        .describe("The Signal account phone number that sent the original message"),
+      recipient: z
+        .string()
+        .optional()
+        .describe("E.164 phone number of the recipient (for direct messages)"),
+      groupId: z.string().optional().describe("Base64-encoded group ID (for group messages)"),
+      targetTimestamp: z
+        .number()
+        .int()
+        .describe(
+          "Unix millisecond timestamp of the message to delete (from the send_message response)",
+        ),
+    },
+    {
+      title: "Delete Sent Message",
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
+    async ({ account, recipient, groupId, targetTimestamp }) =>
+      runTool(
+        runtime,
+        Effect.gen(function* () {
+          const client = yield* SignalClient;
+          yield* client.remoteDelete({
+            account,
+            targetTimestamp,
+            ...(recipient !== undefined ? { recipient } : {}),
+            ...(groupId !== undefined ? { groupId } : {}),
+          });
+        }),
+        () => formatSuccess({ ok: true }),
+      ),
+  );
 };
