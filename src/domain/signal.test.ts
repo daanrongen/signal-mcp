@@ -121,6 +121,22 @@ describe("sendTyping", () => {
   });
 });
 
+describe("markAsRead", () => {
+  it("completes without error", async () => {
+    const result = await Effect.runPromise(
+      Effect.gen(function* () {
+        const client = yield* SignalClient;
+        return yield* client.markAsRead({
+          account: MOCK_ACCOUNT,
+          recipient: "+441234567890",
+          targetTimestamps: [1700000000000],
+        });
+      }).pipe(Effect.provide(SignalClientTest)),
+    );
+    expect(result).toBeUndefined();
+  });
+});
+
 describe("subscribeMessages", () => {
   it("returns a ReceiveResult", async () => {
     const result = await Effect.runPromise(

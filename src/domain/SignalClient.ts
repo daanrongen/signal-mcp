@@ -34,6 +34,11 @@ export interface SignalClientService {
     recipient: string;
     stop?: boolean;
   }) => Effect.Effect<void, SignalError | SignalRpcError>;
+  readonly markAsRead: (params: {
+    account: string;
+    recipient: string;
+    targetTimestamps: number[];
+  }) => Effect.Effect<void, SignalError | SignalRpcError>;
   readonly subscribeMessages: (params: {
     account: string;
     timeoutMs?: number;

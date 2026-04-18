@@ -118,6 +118,14 @@ export const SignalClientLive = Layer.effect(
           ...(stop !== undefined ? { stop } : {}),
         }).pipe(Effect.asVoid),
 
+      markAsRead: ({ account, recipient, targetTimestamps }) =>
+        rpcCall<void>("sendReceipt", {
+          account,
+          recipient,
+          targetTimestamps,
+          type: "read",
+        }).pipe(Effect.asVoid),
+
       subscribeMessages: ({ account, timeoutMs = 10000 }) =>
         Effect.gen(function* () {
           const limit = Math.min(timeoutMs, 30000);
