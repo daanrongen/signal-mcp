@@ -166,6 +166,15 @@ export const SignalClientLive = Layer.effect(
 
           return new ReceiveResult({ envelopes: all });
         }),
+
+      sendAttachment: ({ account, filePaths, recipients, groupId, caption }) =>
+        rpcCall<SendResult>("send", {
+          account,
+          attachments: filePaths,
+          ...(recipients ? { recipient: recipients } : {}),
+          ...(groupId ? { groupId } : {}),
+          ...(caption !== undefined ? { message: caption } : {}),
+        }).pipe(Effect.map((r) => new SendResult(r))),
     });
   }),
 );

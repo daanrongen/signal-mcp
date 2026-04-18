@@ -183,3 +183,19 @@ describe("remoteDelete", () => {
     expect(result).toBeUndefined();
   });
 });
+
+describe("sendAttachment", () => {
+  it("returns a SendResult with a timestamp", async () => {
+    const result = await Effect.runPromise(
+      Effect.gen(function* () {
+        const client = yield* SignalClient;
+        return yield* client.sendAttachment({
+          account: MOCK_ACCOUNT,
+          filePaths: ["/tmp/test.jpg"],
+          recipients: ["+441234567890"],
+        });
+      }).pipe(Effect.provide(SignalClientTest)),
+    );
+    expect(typeof result.timestamp).toBe("number");
+  });
+});

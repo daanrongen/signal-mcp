@@ -52,6 +52,13 @@ export interface SignalClientService {
     groupId?: string;
     targetTimestamp: number;
   }) => Effect.Effect<void, SignalError | SignalRpcError>;
+  readonly sendAttachment: (params: {
+    account: string;
+    filePaths: string[];
+    recipients?: string[];
+    groupId?: string;
+    caption?: string;
+  }) => Effect.Effect<SendResult, SignalError | SignalRpcError>;
 }
 
 export class SignalClient extends Context.Tag("SignalClient")<

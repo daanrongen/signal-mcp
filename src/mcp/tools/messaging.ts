@@ -267,4 +267,43 @@ export const registerMessagingTools = (
         () => formatSuccess({ ok: true }),
       ),
   );
+
+  server.tool(
+    "send_attachment",
+    "Send one or more files (images, PDFs, audio) as Signal attachments. Files must exist on the signal-cli server filesystem. Optionally include a caption text.",
+    {
+      account: z.string().describe("The Signal account phone number to send from"),
+      filePaths: z
+        .array(z.string())
+        .min(1)
+        .describe(
+          'Absolute file paths on the signal-cli server filesystem (e.g. ["/tmp/photo.jpg"])',
+        ),
+      recipients: z.array(z.string()).optional().describe("List of E.164 recipient phone numbers"),
+      groupId: z.string().optional().describe("Base64-encoded Signal group ID"),
+      caption: z.string().optional().describe("Optional caption text to accompany the attachment"),
+    },
+    {
+      title: "Send Signal Attachment",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+    async ({ account, filePaths, recipients, groupId, caption }) =>
+      runTool(
+        runtime,
+        Effect.gen(function* () {
+          const client = yield* SignalClient;
+          return yield* client.sendAttachment({
+            account,
+            filePaths,
+            ...(recipients !== undefined ? { recipients } : {}),
+            ...(groupId !== undefined ? { groupId } : {}),
+            ...(caption !== undefined ? { caption } : {}),
+          });
+        }),
+        formatSuccess,
+      ),
+  );
 };
