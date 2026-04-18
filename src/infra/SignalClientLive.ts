@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect";
-import { SignalAccountConfig, SignalCliConfig } from "../config.ts";
+import { SignalCliConfig } from "../config.ts";
 import { SignalError, SignalRpcError } from "../domain/errors.ts";
 import {
   Account,
@@ -17,7 +17,6 @@ export const SignalClientLive = Layer.effect(
   Effect.gen(function* () {
     const baseHost = yield* Effect.orDie(SignalCliConfig);
     const url = `${baseHost}/api/v1/rpc`;
-    yield* Effect.orDie(SignalAccountConfig);
 
     const rpcCall = <T>(
       method: string,
