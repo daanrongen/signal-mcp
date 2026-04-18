@@ -178,4 +178,33 @@ export const registerMessagingTools = (
         () => formatSuccess({ ok: true }),
       ),
   );
+
+  server.tool(
+    "mark_as_read",
+    "Send read receipts for one or more received messages. Marks the messages as read on the sender's device (shows blue double-ticks). Call this after receiving and processing messages.",
+    {
+      account: z.string().describe("The Signal account phone number sending the read receipt"),
+      recipient: z.string().describe("E.164 phone number of the message sender to acknowledge"),
+      targetTimestamps: z
+        .array(z.number().int())
+        .min(1)
+        .describe("List of Unix millisecond timestamps of the messages to mark as read"),
+    },
+    {
+      title: "Mark Messages as Read",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
+    async ({ account, recipient, targetTimestamps }) =>
+      runTool(
+        runtime,
+        Effect.gen(function* () {
+          const client = yield* SignalClient;
+          yield* client.markAsRead({ account, recipient, targetTimestamps });
+        }),
+        () => formatSuccess({ ok: true }),
+      ),
+  );
 };

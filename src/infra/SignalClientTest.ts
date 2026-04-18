@@ -60,6 +60,8 @@ export const SignalClientTest = Layer.effect(
 
       sendTyping: (_params) => Effect.void,
 
+      markAsRead: (_params) => Effect.void,
+
       subscribeMessages: (_params) => Effect.succeed(new ReceiveResult({ envelopes: [] })),
     });
   }),
